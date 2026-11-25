@@ -1,0 +1,18 @@
+---
+import { formatMonth } from '../i18n/ui';
+import { projectLocale, type Project } from '../lib/projects';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { data } = project;
+const locale = projectLocale(project);
+---
+
+<span class="project-dates">
+  <time datetime={data.startDate}>{formatMonth(data.startDate, locale)}</time>
+  <span> — </span>
+  <time datetime={data.endDate}>{formatMonth(data.endDate, locale)}</time>
+</span>

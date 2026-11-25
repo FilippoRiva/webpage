@@ -1,0 +1,72 @@
+---
+import { site } from '../data/site';
+import PhiLogo from '../components/PhiLogo.astro';
+import { defaultLocale, languageNames, locales, localePath, ui, type Locale } from '../i18n/ui';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  // Language-independent path, used for the switcher and alternate-language links.
+  pagePath?: string;
+  title?: string;
+  description?: string;
+  active?: 'home' | 'projects';
+}
+
+const { locale, pagePath = '', title, description, active = 'home' } = Astro.props;
+const t = ui[locale];
+const pageUrl = (language: Locale) => {
+  const path = localePath(language, pagePath);
+  return Astro.site ? new URL(path, Astro.site).href : path;
+};
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <link rel="icon" type="image/svg+xml" href={localePath(defaultLocale, 'favicon.svg')} />
+    <meta name="description" content={description ?? t.statement} />
+    <title>{title ? `${title} — ${site.name}` : site.name}</title>
+    {Astro.site && <link rel="canonical" href={pageUrl(locale)} />}
+    {locales.map((language) => <link rel="alternate" hreflang={language} href={pageUrl(language)} />)}
+    <link rel="alternate" hreflang="x-default" href={pageUrl(defaultLocale)} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.skipToContent}</a>
+    <header class="sidebar">
+      <div class="identity">
+        <PhiLogo />
+        <span class="sr-only">{site.name}</span>
+      </div>
+      <nav class="navigation" aria-label={t.navigation}>
+        <a href={localePath(locale)} aria-current={active === 'home' ? 'page' : undefined}>{t.home}</a>
+        <a href={localePath(locale, 'projects/')} aria-current={active === 'projects' ? 'page' : undefined}>{t.projects}</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <nav class="language-switch" aria-label={t.language}>
+          {locales.map((language) => (
+            <a
+              href={localePath(language, pagePath)}
+              lang={language}
+              hreflang={language}
+              aria-label={languageNames[language]}
+              aria-current={language === locale ? 'page' : undefined}
+            >{language.toUpperCase()}</a>
+          ))}
+        </nav>
+        <div class="sidebar-links">
+          <a href={`mailto:${site.email}`}>{t.email}</a>
+          <a href={site.github}>GitHub <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </header>
+    <main id="main" class="main" tabindex="-1">
+      <div class="content">
+        <slot />
+      </div>
+    </main>
+  </body>
+</html>

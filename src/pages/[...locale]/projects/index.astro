@@ -1,0 +1,35 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import ProjectDates from '../../../components/ProjectDates.astro';
+import { site } from '../../../data/site';
+import { locales, localeParams, ui, type Locale } from '../../../i18n/ui';
+import { getProjects, projectPath } from '../../../lib/projects';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: localeParams(locale), props: { locale } }));
+}
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = ui[locale];
+const projects = await getProjects(locale);
+---
+
+<Layout locale={locale} pagePath="projects/" title={t.projects} description={`${t.projectsBy} ${site.name}.`} active="projects">
+  <h1 class="page-title">{t.projects}</h1>
+
+  <ol class="project-list">
+    {projects.map((project) => (
+      <li>
+        <a class="project-link project-preview" data-color={project.data.color} href={projectPath(project)}>
+          <div class="preview-meta">
+            <ProjectDates project={project} />
+            <span class="project-arrow" aria-hidden="true">↗</span>
+          </div>
+          <h2 class="project-name">{project.data.title}</h2>
+          <p class="project-summary">{project.data.summary}</p>
+        </a>
+      </li>
+    ))}
+  </ol>
+</Layout>
