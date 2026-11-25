@@ -1,0 +1,49 @@
+---
+import { render } from 'astro:content';
+import Layout from '../../../layouts/Layout.astro';
+import ProjectDates from '../../../components/ProjectDates.astro';
+import { localeParams, localePath, ui } from '../../../i18n/ui';
+import { getAllProjects, projectLocale, projectSlug, type Project } from '../../../lib/projects';
+
+export async function getStaticPaths() {
+  return (await getAllProjects()).map((project) => ({
+    params: { ...localeParams(projectLocale(project)), id: projectSlug(project) },
+    props: { project },
+  }));
+}
+
+interface Props { project: Project }
+const { project } = Astro.props;
+const { data } = project;
+const locale = projectLocale(project);
+const t = ui[locale];
+const { Content } = await render(project);
+---
+
+<Layout locale={locale} pagePath={`projects/${projectSlug(project)}/`} title={data.shortTitle} description={data.summary} active="projects">
+  <a class="back-link" href={localePath(locale, 'projects/')}><span aria-hidden="true">← </span>{t.projects}</a>
+
+  <article>
+    <header class="project-header" data-color={data.color}>
+      <ProjectDates project={project} />
+      <h1>{data.title}</h1>
+      <p class="project-summary">{data.summary}</p>
+      <ul class="keywords" aria-label={t.technologies}>
+        {data.keywords.map((keyword) => <li>{keyword}</li>)}
+      </ul>
+    </header>
+
+    <div class="project-body">
+      {data.url && (
+        <a class="repository" href={data.url}>{t.repository} <span aria-hidden="true">↗</span></a>
+      )}
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+  </article>
+
+  <footer class="project-footer">
+    <a class="back-link" href={localePath(locale, 'projects/')}><span aria-hidden="true">← </span>{t.allProjects}</a>
+  </footer>
+</Layout>

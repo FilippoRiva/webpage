@@ -1,0 +1,41 @@
+<!-- Two strokes, drawn in place. The parent supplies the accessible name. -->
+<svg
+  class="phi-logo"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 40 52"
+  width="32"
+  height="42"
+  fill="none"
+  stroke="currentColor"
+  stroke-linecap="round"
+  aria-hidden="true"
+  focusable="false"
+>
+  <circle
+    class="ring"
+    cx="20"
+    cy="26"
+    r="14"
+    stroke-width="4.8"
+    pathLength="1"
+    transform="rotate(-90 20 26)"
+  />
+  <path class="stem" d="M20 4V48" stroke-width="3.8" pathLength="1" />
+</svg>
+
+<style>
+  .phi-logo { display: block; }
+
+  /* The default is the finished mark, including when motion is reduced. */
+  @media (prefers-reduced-motion: no-preference) {
+    .ring, .stem { stroke-dasharray: 1; }
+    .ring { animation: draw 560ms cubic-bezier(0.4, 0, 0.2, 1) both; }
+    .stem { animation: draw 420ms cubic-bezier(0.4, 0, 0.2, 1) 280ms both; }
+  }
+
+  @keyframes draw {
+    0% { stroke-dashoffset: 1; opacity: 0; }
+    1% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+</style>

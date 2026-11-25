@@ -1,0 +1,74 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { locales, localeParams, localePath, ui, type Locale } from '../../i18n/ui';
+
+export function getStaticPaths() {
+  return locales.map((locale) => ({ params: localeParams(locale), props: { locale } }));
+}
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = ui[locale];
+---
+
+<Layout locale={locale} active="home">
+  <section class="hero" aria-labelledby="intro-title">
+    <h1 id="intro-title" lang="en">{t.statement}</h1>
+  </section>
+
+  <!-- The future chatbot can go here. -->
+
+  <nav class="home-links" aria-label={t.projects}>
+    <a class="destination thesis-link" href={localePath(locale, 'projects/arco/')}>
+      <span class="destination-label">{t.thesis}</span>
+      <div class="destination-content">
+        <h2 class="destination-title">ARCO</h2>
+        <p class="destination-description">{t.thesisDescription}</p>
+      </div>
+      <span class="destination-arrow" aria-hidden="true">↗</span>
+    </a>
+    <a class="destination archive-link" href={localePath(locale, 'projects/')}>
+      <div class="destination-content">
+        <h2 class="destination-title">{t.allProjects}</h2>
+      </div>
+      <span class="destination-arrow" aria-hidden="true">↗</span>
+    </a>
+  </nav>
+</Layout>
+
+<style>
+  .home-links {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .destination {
+    display: grid;
+    grid-template-rows: 20px 1fr 28px;
+    gap: 24px;
+    min-height: 320px;
+    padding: clamp(24px, 3vw, 40px);
+    text-decoration: none;
+  }
+
+  .destination:focus-visible { outline-offset: -8px; }
+  .destination-label { font: 0.75rem/1.6 var(--mono); }
+  .destination-content { grid-row: 2; align-self: center; }
+  .destination-title { font-size: clamp(3rem, 5vw, 4.75rem); letter-spacing: -0.055em; }
+  .destination-description { max-width: 34ch; margin-top: 16px; font-size: 0.95rem; line-height: 1.6; }
+  .destination-arrow { grid-row: 3; justify-self: end; align-self: end; font-size: 1.75rem; line-height: 1; }
+  .destination:hover .destination-title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 8px; }
+  .thesis-link { background: var(--sage); color: var(--panel-ink); }
+  .archive-link { border: 1px solid var(--rule); }
+  .archive-link:hover { border-color: var(--muted); }
+  .archive-link .destination-title { max-width: 9ch; font-size: clamp(2.25rem, 3.7vw, 3.75rem); }
+
+  @media (max-width: 1000px) {
+    .home-links { grid-template-columns: 1fr; }
+    .destination { min-height: 260px; }
+    .archive-link { grid-template-rows: 1fr; grid-template-columns: minmax(0, 1fr) auto; min-height: 160px; }
+    .archive-link .destination-content, .archive-link .destination-arrow { grid-row: 1; align-self: center; }
+    .archive-link .destination-title { max-width: none; }
+  }
+</style>
